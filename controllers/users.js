@@ -48,10 +48,9 @@ const createUser = (req, res) => {
       }));
 };
 
-// как сделать?
 const updateProfileUser = (req, res) => {
-  User.findByIdAndUpdate(req.body)
-    .then((user) => res.status(201).send(user))
+  User.findByIdAndUpdate(req.user._id, req.body)
+    .then((user) => res.status(200).send(user))
     .catch((err) => res
       .status(500)
       .send({
@@ -61,12 +60,10 @@ const updateProfileUser = (req, res) => {
       }));
 };
 
-// как сделать?
 const updateAvatarUser = (req, res) => {
-  // const { avatar } = req.body;
-  // User.findByIdAndUpdate(req.user.id, { avatar }, { new: true })
-  User.findByIdAndUpdate(req.body)
-    .then((user) => res.status(201).send(user))
+  const { avatar } = req.body;
+  User.findByIdAndUpdate(req.user._id, { avatar })
+    .then((user) => res.status(200).send(user))
     .catch((err) => res
       .status(500)
       .send({

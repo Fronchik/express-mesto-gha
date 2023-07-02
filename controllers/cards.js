@@ -12,13 +12,11 @@ const getCards = (req, res) => {
       }));
 };
 
-// тут верно в 19 строке?
 const createCard = (req, res) => {
   const { name, link } = req.body;
   Card.create({
     name,
     link,
-    // ...req.body,
     owner: req.user._id,
   })
     .then((card) => res.status(201).send(card))
@@ -58,9 +56,12 @@ const deleteCardById = (req, res) => {
     });
 };
 
-// как сделать?
 const putLikeCardById = (req, res) => {
-  Card.deleteById(req.params.id)
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true },
+  )
     .orFail(() => new Error('Not found'))
     .then((card) => res.status(200).send(card))
     .catch((err) => {
@@ -82,9 +83,12 @@ const putLikeCardById = (req, res) => {
     });
 };
 
-// как сделать?
 const deleteLikeCardById = (req, res) => {
-  Card.findByIdAndRemove(req.params.id)
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $pull: { likes: req.user._id } },
+    { new: true },
+  )
     .orFail(() => new Error('Not found'))
     .then((card) => res.status(200).send(card))
     .catch((err) => {
