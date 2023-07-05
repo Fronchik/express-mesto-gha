@@ -47,15 +47,25 @@ const createUser = (req, res) => {
 };
 
 const updateProfileUser = (req, res) => {
-  User.findByIdAndUpdate(req.user._id, req.body, { new: true })
+  // User.findByIdAndUpdate(req.user._id, req.body, { new: true })
+  User.findByIdAndUpdate(req.params._id, req.body, { new: true })
+    // .then((user) => {
+    //   if (user) {
+    //     res.status(200).send(user);
+    //   } else {
+    //     res.status(400).send({
+    //       message: 'Invalid data passed when updating profile',
+    //       err: 'Invalid data',
+    //     });
+    //   }
+    // })
     .then((user) => {
-      if (user) {
-        res.status(200).send(user);
-      } else {
-        res.status(400).send({
-          message: 'Invalid data passed when updating profile',
-          err: 'Invalid data',
+      if (!user) {
+        res.status(404).send({
+          message: 'User not found',
         });
+      } else {
+        res.status(200).send(user);
       }
     })
     .catch((err) => res
