@@ -47,8 +47,17 @@ const createUser = (req, res) => {
 };
 
 const updateProfileUser = (req, res) => {
-  User.findByIdAndUpdate(req.user._id, req.body)
-    .then((user) => res.status(200).send(user))
+  User.findByIdAndUpdate(req.user._id, req.body, { new: true })
+    .then((user) => {
+      if (user) {
+        res.status(200).send(user);
+      } else {
+        res.status(400).send({
+          message: 'Invalid data passed when updating profile',
+          err: 'Invalid data',
+        });
+      }
+    })
     .catch((err) => res
       .status(500)
       .send({
@@ -59,8 +68,8 @@ const updateProfileUser = (req, res) => {
 };
 
 const updateAvatarUser = (req, res) => {
-  const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar })
+  // const { avatar } = req.body;
+  User.findByIdAndUpdate(req.user._id, req.body.avatar)
     .then((user) => res.status(200).send(user))
     .catch((err) => res
       .status(500)
