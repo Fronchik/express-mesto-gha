@@ -70,7 +70,7 @@ const deleteCardById = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(404).send({
+        return res.status(400).send({
           message: 'Card not found',
         });
       }
@@ -78,6 +78,42 @@ const deleteCardById = (req, res) => {
         message: 'Internal Server Error',
         err: err.message,
       });
+    });
+};
+
+const putLikeCardById = (req, res) => {
+  Card.findByIdAndUpdate(
+    req.params.cardId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true },
+  )
+    .orFail(() => new Error('Not found'))
+    .then((card) => {
+      if (card === null) {
+        res.status(400).send({
+          message: 'Invalid card ID',
+          err: 'Invalid ID',
+        });
+      } else {
+        res.status(200).send(card);
+      }
+    })
+    .catch((err) => {
+      if (err.message === 'Not found') {
+        res
+          .status(404)
+          .send({
+            message: 'Card not found',
+          });
+      } else {
+        res
+          .status(500)
+          .send({
+            message: 'Internal Server Error',
+            err: err.message,
+            stack: err.stack,
+          });
+      }
     });
 };
 
@@ -87,65 +123,29 @@ const deleteCardById = (req, res) => {
 //     { $addToSet: { likes: req.user._id } },
 //     { new: true },
 //   )
-//     .orFail(() => new Error('Not found'))
 //     .then((card) => {
-//       if (card) {
-//         res.status(200).send(card);
-//       } else {
-//         res.status(400).send({
-//           message: 'Invalid card ID',
-//           err: 'Invalid ID',
-//         });
+//       if (!card) {
+//         return res.status(400)
+//           .send({
+//             message: 'Invalid card ID',
+//             err: 'Invalid ID',
+//           });
 //       }
+//       res.status(200).send(card);
 //     })
 //     .catch((err) => {
-//       if (err.message === 'Not found') {
-//         res
-//           .status(404)
-//           .send({
-//             message: 'Card not found',
-//           });
-//       } else {
-//         res
-//           .status(500)
-//           .send({
-//             message: 'Internal Server Error',
-//             err: err.message,
-//             stack: err.stack,
-//           });
+//       if (err.name === 'CastError') {
+//         return res.status(404).send({
+//           message: 'Card not found',
+//         });
 //       }
+//       res.status(500).send({
+//         message: 'Internal Server Error',
+//         err: err.message,
+//         stack: err.stack,
+//       });
 //     });
 // };
-
-const putLikeCardById = (req, res) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true },
-  )
-    .then((card) => {
-      if (!card) {
-        return res.status(400)
-          .send({
-            message: 'Invalid card ID',
-            err: 'Invalid ID',
-          });
-      }
-      res.status(200).send(card);
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(404).send({
-          message: 'Card not found',
-        });
-      }
-      res.status(500).send({
-        message: 'Internal Server Error',
-        err: err.message,
-        stack: err.stack,
-      });
-    });
-};
 
 const deleteLikeCardById = (req, res) => {
   Card.findByIdAndUpdate(
