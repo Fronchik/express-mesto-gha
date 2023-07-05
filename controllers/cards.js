@@ -33,34 +33,11 @@ const createCard = (req, res) => {
     });
 };
 
-// const deleteCardById = (req, res) => {
-//   Card.deleteById(req.params.id)
-//     .orFail(() => new Error('Not found'))
-//     .then((card) => res.status(200).send(card))
-//     .catch((err) => {
-//       if (err.message === 'Not found') {
-//         res
-//           .status(404)
-//           .send({
-//             message: 'Card not found',
-//           });
-//       } else {
-//         res
-//           .status(500)
-//           .send({
-//             message: 'Internal Server Error',
-//             err: err.message,
-//             stack: err.stack,
-//           });
-//       }
-//     });
-// };
-
 const deleteCardById = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((deletedCard) => {
       if (!deletedCard) {
-        return res.status(404).send({
+        return res.status(400).send({
           message: 'Card not found',
         });
       }
@@ -70,7 +47,7 @@ const deleteCardById = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(400).send({
+        return res.status(404).send({
           message: 'Card not found',
         });
       }
@@ -116,36 +93,6 @@ const putLikeCardById = (req, res) => {
       }
     });
 };
-
-// const putLikeCardById = (req, res) => {
-//   Card.findByIdAndUpdate(
-//     req.params.cardId,
-//     { $addToSet: { likes: req.user._id } },
-//     { new: true },
-//   )
-//     .then((card) => {
-//       if (!card) {
-//         return res.status(400)
-//           .send({
-//             message: 'Invalid card ID',
-//             err: 'Invalid ID',
-//           });
-//       }
-//       res.status(200).send(card);
-//     })
-//     .catch((err) => {
-//       if (err.name === 'CastError') {
-//         return res.status(404).send({
-//           message: 'Card not found',
-//         });
-//       }
-//       res.status(500).send({
-//         message: 'Internal Server Error',
-//         err: err.message,
-//         stack: err.stack,
-//       });
-//     });
-// };
 
 const deleteLikeCardById = (req, res) => {
   Card.findByIdAndUpdate(
