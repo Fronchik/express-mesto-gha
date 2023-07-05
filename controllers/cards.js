@@ -125,10 +125,11 @@ const putLikeCardById = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(400).send({
-          message: 'Invalid card ID',
-          err: 'Invalid ID',
-        });
+        return res.status(400)
+          .send({
+            message: 'Invalid card ID',
+            err: 'Invalid ID',
+          });
       }
       res.status(200).send(card);
     })

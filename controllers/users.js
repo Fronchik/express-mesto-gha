@@ -61,12 +61,11 @@ const updateProfileUser = (req, res) => {
     // })
     .then((user) => {
       if (!user) {
-        res.status(404).send({
+        return res.status(404).send({
           message: 'User not found',
         });
-      } else {
-        res.status(200).send(user);
       }
+      res.status(200).send(user);
     })
     .catch((err) => res
       .status(500)
