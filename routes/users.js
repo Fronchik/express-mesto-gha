@@ -17,18 +17,18 @@ function validateId(req, res, next) {
 }
 
 // Проверка корректности name и обработка ошибок
-function validateName(req, res, next) {
-  const name = req.params.name;
+// function validateName(req, res, next) {
+//   const name = req.params.name;
 
-  if (!mongoose.Types.ObjectId.isValid(name)) {
-    return res.status(400).json({
-      message: 'Invalid data',
-      err: 'Invalid data',
-    });
-  }
+//   if (!mongoose.Types.ObjectId.isValid(name)) {
+//     return res.status(400).json({
+//       message: 'Invalid data',
+//       err: 'Invalid data',
+//     });
+//   }
 
-  next();
-}
+//   next();
+// }
 
 router.get('/', getUsers);
 
@@ -36,7 +36,7 @@ router.get('/:id', validateId, getUserById);
 
 router.post('/', createUser);
 
-router.patch('/me', validateName, updateProfileUser);
+router.patch('/me', updateProfileUser);
 
 router.patch('/me/avatar', updateAvatarUser);
 
