@@ -54,7 +54,7 @@ const updateProfileUser = (req, res) => {
           message: 'User not found',
         });
       }
-      res.status(200).send(user);
+      return res.status(200).send(user);
     })
     .catch((err) => res
       .status(500)
