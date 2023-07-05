@@ -47,7 +47,7 @@ const createUser = (req, res) => {
 };
 
 const updateProfileUser = (req, res) => {
-  User.findByIdAndUpdate(req.user._id, req.body, { new: true })
+  User.findByIdAndUpdate(req.user._id, req.body, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
         return res.status(404).send({
@@ -57,9 +57,9 @@ const updateProfileUser = (req, res) => {
       return res.status(200).send(user);
     })
     .catch((err) => res
-      .status(500)
+      .status(400)
       .send({
-        message: 'Internal Server Error',
+        message: 'Validation Error',
         err: err.message,
         stack: err.stack,
       }));

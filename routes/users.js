@@ -16,20 +16,6 @@ function validateId(req, res, next) {
   next();
 }
 
-// Проверка корректности name и обработка ошибок
-// function validateName(req, res, next) {
-//   const name = req.params.name;
-
-//   if (!mongoose.Types.ObjectId.isValid(name)) {
-//     return res.status(400).json({
-//       message: 'Invalid data',
-//       err: 'Invalid data',
-//     });
-//   }
-
-//   next();
-// }
-
 router.get('/', getUsers);
 
 router.get('/:id', validateId, getUserById);
