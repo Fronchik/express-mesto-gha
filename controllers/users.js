@@ -69,15 +69,22 @@ const updateProfileUser = (req, res) => {
 
 const updateAvatarUser = (req, res) => {
   const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, { avatar })
-    .then((user) => res.status(200).send(user))
-    .catch((err) => res
-      .status(500)
-      .send({
-        message: 'Internal Server Error',
-        err: err.message,
-        stack: err.stack,
-      }));
+  User.findByIdAndUpdate(req.user._id, { avatar }, { new: true })
+    .then((user) => {
+      if (user && user.avatar === avatar) {
+        res.status(200).send(user);
+      } else {
+        res.status(400).json({
+          message: 'Avatar URL in response does not match the requested URL',
+          err: 'Invalid avatar URL',
+        });
+      }
+    })
+    .catch((err) => res.status(500).json({
+      message: 'Internal Server Error',
+      err: err.message,
+      stack: err.stack,
+    }));
 };
 
 module.exports = {

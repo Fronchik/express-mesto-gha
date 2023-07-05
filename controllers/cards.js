@@ -36,8 +36,7 @@ const createCard = (req, res) => {
 const deleteCardById = (req, res) => {
   Card.deleteById(req.params.id)
     .orFail(() => new Error('Not found'))
-    // .then((card) => res.status(200).send(card))
-    .then((card) => res.status(200).json({ card }))
+    .then((card) => res.status(200).send(card))
     .catch((err) => {
       if (err.message === 'Not found') {
         res
@@ -64,8 +63,17 @@ const putLikeCardById = (req, res) => {
     { new: true },
   )
     .orFail(() => new Error('Not found'))
-    .then((card) => res.status(200).send(card))
-    // .then((card) => res.status(400).send(card))
+    // .then((card) => res.status(200).send(card))
+    .then((card) => {
+      if (card) {
+        res.status(200).send(card);
+      } else {
+        res.status(400).send({
+          message: 'Invalid card ID',
+          err: 'Invalid ID',
+        });
+      }
+    })
     .catch((err) => {
       if (err.message === 'Not found') {
         res
@@ -92,8 +100,16 @@ const deleteLikeCardById = (req, res) => {
     { new: true },
   )
     .orFail(() => new Error('Not found'))
-    .then((card) => res.status(200).send(card))
-    // .then((card) => res.status(400).send(card))
+    .then((card) => {
+      if (card) {
+        res.status(200).send(card);
+      } else {
+        res.status(400).send({
+          message: 'Invalid card ID',
+          err: 'Invalid ID',
+        });
+      }
+    })
     .catch((err) => {
       if (err.message === 'Not found') {
         res
