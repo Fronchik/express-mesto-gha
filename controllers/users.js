@@ -68,8 +68,8 @@ const updateProfileUser = (req, res) => {
 };
 
 const updateAvatarUser = (req, res) => {
-  // const { avatar } = req.body;
-  User.findByIdAndUpdate(req.user._id, req.body.avatar)
+  const { avatar } = req.body;
+  User.findByIdAndUpdate(req.user._id, { avatar })
     .then((user) => res.status(200).send(user))
     .catch((err) => res
       .status(500)
