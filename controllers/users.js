@@ -14,23 +14,14 @@ const getUsers = (req, res) => {
 
 const getUserById = (req, res) => {
   User.findById(req.params.id)
-    .orFail(new Error('CastError'))
+    .orFail(new Error('NotFound'))
     .then((user) => {
-      if (user) {
-        res.status(200).send(user);
-      } else {
-        res.status(404).send({
-          message: 'User not found',
-          err: 'not found',
-        });
-      }
+      res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400).send({
-          message: 'Invalid data',
-          err: err.message,
-          stack: err.stack,
+      if (err.message === 'NotFound') {
+        res.status(404).send({
+          message: 'User not found',
         });
       } else {
         res.status(500).send({
