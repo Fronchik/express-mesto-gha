@@ -14,6 +14,7 @@ const getUsers = (req, res) => {
 
 const getUserById = (req, res) => {
   User.findById(req.params.id)
+    .orFail(new Error('CastError'))
     .then((user) => {
       if (user) {
         res.status(200).send(user);
@@ -24,26 +25,42 @@ const getUserById = (req, res) => {
         });
       }
     })
-    .catch((err) => res
-      .status(500)
-      .send({
-        message: 'Internal Server Error',
-        err: err.message,
-        stack: err.stack,
-      }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({
+          message: 'Invalid data',
+          err: err.message,
+          stack: err.stack,
+        });
+      } else {
+        res.status(500).send({
+          message: 'Internal Server Error',
+          err: err.message,
+          stack: err.stack,
+        });
+      }
+    });
 };
 
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then((user) => res.status(201).send(user))
-    .catch((err) => res
-      .status(400)
-      .send({
-        message: 'Creation Error',
-        err: err.message,
-        stack: err.stack,
-      }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({
+          message: 'Invalid data',
+          err: err.message,
+          stack: err.stack,
+        });
+      } else {
+        res.status(500).send({
+          message: 'Creation Error',
+          err: err.message,
+          stack: err.stack,
+        });
+      }
+    });
 };
 
 const updateProfileUser = (req, res) => {
@@ -56,13 +73,21 @@ const updateProfileUser = (req, res) => {
       }
       return res.status(200).send(user);
     })
-    .catch((err) => res
-      .status(400)
-      .send({
-        message: 'Validation Error',
-        err: err.message,
-        stack: err.stack,
-      }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({
+          message: 'Invalid data',
+          err: err.message,
+          stack: err.stack,
+        });
+      } else {
+        res.status(500).send({
+          message: 'Update Error',
+          err: err.message,
+          stack: err.stack,
+        });
+      }
+    });
 };
 
 const updateAvatarUser = (req, res) => {
@@ -78,11 +103,21 @@ const updateAvatarUser = (req, res) => {
         });
       }
     })
-    .catch((err) => res.status(500).json({
-      message: 'Internal Server Error',
-      err: err.message,
-      stack: err.stack,
-    }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send({
+          message: 'Invalid data',
+          err: err.message,
+          stack: err.stack,
+        });
+      } else {
+        res.status(500).send({
+          message: 'Update Error',
+          err: err.message,
+          stack: err.stack,
+        });
+      }
+    });
 };
 
 module.exports = {
