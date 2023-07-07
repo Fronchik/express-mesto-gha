@@ -21,7 +21,7 @@ const createCard = (req, res) => {
   })
     .then((card) => res.status(201).send(card))
     .catch((err) => {
-      if (err.message.includes('validation failed')) {
+      if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Запрашиваемый пользователь не найден' });
       } else {
         res.status(500).send({
