@@ -22,7 +22,6 @@ const userSchema = new mongoose.Schema({
     },
     required: [true, 'Поле "avatar" должно быть заполнено'],
   },
-},
-  { versionKey: false });
+}, { versionKey: false });
 
 module.exports = mongoose.model('user', userSchema);

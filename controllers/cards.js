@@ -23,13 +23,11 @@ const createCard = (req, res) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Запрашиваемый пользователь не найден' });
-      } else {
-        res.status(500).send({
-          message: 'Internal Server Error',
-          err: err.message,
-          stack: err.stack,
-        });
-      }
+      } return res.status(500).send({
+        message: 'Internal Server Error',
+        err: err.message,
+        stack: err.stack,
+      });
     });
 };
 
@@ -40,8 +38,7 @@ const deleteCardById = (req, res) => {
         return res.status(404).send({
           message: 'Card not found',
         });
-      }
-      res.status(200).send({
+      } return res.status(200).send({
         message: 'Card deleted successfully',
       });
     })
@@ -50,8 +47,7 @@ const deleteCardById = (req, res) => {
         return res.status(400).send({
           message: 'Card not found',
         });
-      }
-      res.status(500).send({
+      } return res.status(500).send({
         message: 'Internal Server Error',
         err: err.message,
       });
