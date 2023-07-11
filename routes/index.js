@@ -21,7 +21,7 @@ router.post('/signup', celebrate({
     about: Joi.string().default('Исследователь').min(2).max(30),
     email: Joi.string().email().required(),
     password: Joi.string().required(),
-    avatar: Joi.string().uri(),
+    avatar: Joi.string().pattern(/^https?:\/\/(?:www\.)?[A-Za-z0-9\-._~:/?#[\]@!$&'()*+,;=]+$/).required(),
   }),
 }), createUser);
 
