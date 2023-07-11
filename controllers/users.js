@@ -51,6 +51,9 @@ const login = (req, res, next) => {
   User.findOne({ email })
     .select('+password')
     .then((user) => {
+      if (!user) {
+        throw new UserNotFound();
+      }
       // проверяем совпадает ли пароль
       bcrypt.compare(String(password), user.password)
         .then((isValidUser) => {
@@ -70,7 +73,7 @@ const login = (req, res, next) => {
             throw new Unauthorized();
           }
         }).catch(next);
-    });
+    }).catch(next);
 };
 
 const updateProfileUser = (req, res, next) => {
