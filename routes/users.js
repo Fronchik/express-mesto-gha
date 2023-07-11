@@ -1,16 +1,37 @@
 const router = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
+Joi.objectId = require('joi-objectid')(Joi);
+
 const {
-  getUsers, getUserById, createUser, updateProfileUser, updateAvatarUser,
+  getUsers, getUserById, getUsersMe, updateProfileUser, updateAvatarUser,
 } = require('../controllers/users');
 
+// возвращает всех пользователей
 router.get('/', getUsers);
 
-router.get('/:id', getUserById);
+// возвращает информацию о текущем пользователе
+router.get('/me', getUsersMe);
 
-router.post('/', createUser);
+// возвращает пользователя по _id
+router.get('/:id', celebrate({
+  params: Joi.object().keys({
+    id: Joi.objectId().required(),
+  }),
+}), getUserById);
 
-router.patch('/me', updateProfileUser);
+// обновляет профиль
+router.patch('/me', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+  }),
+}), updateProfileUser);
 
-router.patch('/me/avatar', updateAvatarUser);
+// обновляет аватар
+router.patch('/me/avatar', celebrate({
+  body: Joi.object({
+    avatar: Joi.string().pattern(/^https?:\/\/(?:www\.)?[A-Za-z0-9\-._~:/?#[\]@!$&'()*+,;=]+$/).required(),
+  }),
+}), updateAvatarUser);
 
 module.exports = router;
