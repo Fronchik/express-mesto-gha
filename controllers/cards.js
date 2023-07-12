@@ -1,5 +1,6 @@
 const Card = require('../models/card');
 const CardNotFound = require('../components/CardNotFound');
+const Forbidden = require('../components/Forbidden');
 
 const getCards = (req, res, next) => {
   Card.find({})
@@ -19,14 +20,18 @@ const createCard = (req, res, next) => {
 };
 
 const deleteCardById = (req, res, next) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .then((deletedCard) => {
-      if (!deletedCard) {
+  Card.findById(req.params.cardId)
+    .then((cardToDelete) => {
+      if (!cardToDelete) {
         throw new CardNotFound();
       }
-      res.status(200).send({
-        message: 'Card deleted successfully',
-      });
+      if (String(cardToDelete.owner) !== String(req.user._id)) {
+        throw new Forbidden();
+      }
+      Card.findByIdAndRemove(req.params.cardId)
+        .then(() => {
+          res.status(200).send({ message: 'Card deleted successfully' });
+        }).catch(next);
     })
     .catch(next);
 };

@@ -9,7 +9,12 @@ const {
 router.get('/', getCards);
 
 // создаёт карточку
-router.post('/', createCard);
+router.post('/', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    link: Joi.string().pattern(/^https?:\/\/(?:www\.)?[A-Za-z0-9\-._~:/?#[\]@!$&'()*+,;=]+$/).required(),
+  }),
+}), createCard);
 
 // удаляет карточку по идентификатору
 router.delete('/:cardId', celebrate({
@@ -23,18 +28,12 @@ router.put('/:cardId/likes', celebrate({
   params: Joi.object().keys({
     cardId: Joi.objectId().required(),
   }),
-  body: Joi.object().keys({
-    likes: Joi.string().required(),
-  }),
 }), putLikeCardById);
 
 // убрать лайк с карточки
 router.delete('/:cardId/likes', celebrate({
   params: Joi.object().keys({
     cardId: Joi.objectId().required(),
-  }),
-  body: Joi.object().keys({
-    likes: Joi.string().required(),
   }),
 }), deleteLikeCardById);
 

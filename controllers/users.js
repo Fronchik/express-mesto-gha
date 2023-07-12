@@ -11,13 +11,14 @@ const getUsers = (req, res, next) => {
     .then((users) => res.status(200).send(users)).catch(next);
 };
 
-const getUsersMe = (req, res) => {
-  const user = {
-    _id: req.user._id,
-    name: req.user.name,
-    email: req.user.email,
-  };
-  res.send(user);
+const getUsersMe = (req, res, next) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        throw new UserNotFound();
+      }
+      res.status(200).send(user);
+    }).catch(next);
 };
 
 const getUserById = (req, res, next) => {
@@ -52,7 +53,7 @@ const login = (req, res, next) => {
     .select('+password')
     .then((user) => {
       if (!user) {
-        throw new UserNotFound();
+        throw new Unauthorized();
       }
       // проверяем совпадает ли пароль
       bcrypt.compare(String(password), user.password)
