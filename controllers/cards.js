@@ -1,6 +1,7 @@
 const Card = require('../models/card');
 const CardNotFound = require('../components/CardNotFound');
 const Forbidden = require('../components/Forbidden');
+const BadRequest = require('../components/BadRequest');
 
 const getCards = (req, res, next) => {
   Card.find({})
@@ -16,7 +17,14 @@ const createCard = (req, res, next) => {
     owner: req.user._id,
   })
     .then((card) => res.status(201).send(card))
-    .catch(next);
+    .catch((err) => {
+      // Проверяем, является ли ошибка ошибкой валидации
+      if (err.name === 'ValidationError') {
+        next(new BadRequest());
+      } else {
+        next(err);
+      }
+    });
 };
 
 const deleteCardById = (req, res, next) => {

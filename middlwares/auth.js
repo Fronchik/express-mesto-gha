@@ -1,9 +1,15 @@
 const jwt = require('jsonwebtoken');
+const Unauthorized = require('../components/Unauthorized');
 
 // аутентификация пользователя на основе токена
 const auth = (req, res, next) => {
   // токен из куки запроса
   const token = req.cookies.jwt;
+
+  // проверка на отсутствие токена
+  if (!token) {
+    throw new Unauthorized();
+  }
 
   // храниться расшифрованная информация из токена
   let payload;
@@ -11,7 +17,8 @@ const auth = (req, res, next) => {
   try {
     payload = jwt.verify(token, 'SECRET');
   } catch (err) {
-    res.status(401).send({ message: 'Ошибка авторизации' });
+    const error = new Unauthorized();
+    next(error);
     return;
   }
 

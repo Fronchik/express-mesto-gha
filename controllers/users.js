@@ -3,8 +3,9 @@ const jsonWebToken = require('jsonwebtoken');
 const User = require('../models/user');
 const UserNotFound = require('../components/UserNotFound');
 const Unauthorized = require('../components/Unauthorized');
-const BadRequest = require('../components/BadRequest');
+const CardNotFound = require('../components/CardNotFound');
 const Conflict = require('../components/Conflict');
+const BadRequest = require('../components/BadRequest');
 
 const getUsers = (req, res, next) => {
   User.find({})
@@ -37,7 +38,10 @@ const createUser = (req, res, next) => {
       User.create({ ...req.body, password: hashedPassword })
         .then((user) => res.status(201).send(user))
         .catch((err) => {
-          if (err.code === 11000) {
+          // Проверяем, является ли ошибка ошибкой валидации
+          if (err.name === 'ValidationError') {
+            next(new BadRequest());
+          } else if (err.code === 11000) {
             next(new Conflict());
           } else {
             next(err);
@@ -84,7 +88,14 @@ const updateProfileUser = (req, res, next) => {
         throw new UserNotFound();
       }
       res.status(200).send(user);
-    }).catch(next);
+    }).catch((err) => {
+      // Проверяем, является ли ошибка ошибкой валидации
+      if (err.name === 'ValidationError') {
+        next(new BadRequest());
+      } else {
+        next(err);
+      }
+    });
 };
 
 const updateAvatarUser = (req, res, next) => {
@@ -94,10 +105,17 @@ const updateAvatarUser = (req, res, next) => {
       if (user && user.avatar === avatar) {
         res.status(200).send(user);
       } else {
-        throw new BadRequest();
+        throw new CardNotFound();
       }
     })
-    .catch(next);
+    .catch((err) => {
+      // Проверяем, является ли ошибка ошибкой валидации
+      if (err.name === 'ValidationError') {
+        next(new BadRequest());
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports = {
